@@ -1,5 +1,6 @@
 const Discord = require("discord.js")  
 const { MessageEmbed } = require("discord.js") 
+const moment = require('moment')
 
 module.exports = { 
   name: "uptime", 
@@ -11,7 +12,7 @@ module.exports = {
 			type: 3,
 			required: true,
 			choices: [
-				{ name: 'Add', value: 'add' }, { name: 'Delete', value: 'delete' }
+				{ name: 'Add', value: 'add' }, { name: 'Delete', value: 'delete' }, { name: 'Info', value: 'info' }
 			]
 		},
         {
@@ -23,11 +24,11 @@ module.exports = {
 	],
     run: async (client, interaction, args) => {
 		const link = interaction.options.getString('link')
-		const checkUrl = link.startsWith('https://')
-		if(checkUrl) return interaction.reply('This is not a link!') // Only https:// links
 		const opt = interaction.options.getString('type')
 		const checkLink = Object.values(client.db.fetch('links')).filter(x => x.userId === interaction.user.id).find(x => x.link === link)
 		if(opt === 'add') {
+			const checkUrl = link.startsWith('https://')
+			if(!checkUrl) return interaction.reply('This is not a link!') // Only https:// links
 			if((checkLink == null) == false) return interaction.reply({ content: 'This link already exists in the database!', ephemeral: true })
 			var id = randomstring(30)
 			var Data = {
@@ -52,7 +53,15 @@ module.exports = {
 			.setDescription('Your link successfully deleted from database!')
 			.setTimestamp()
 			interaction.reply({ ephemeral: true, embeds: [newEmbed] })
-		} 
+		} else if(opt === 'info') {
+			if(checkLink == null) return interaction.reply({ content: 'Link not found!', ephemeral: true })
+			const newEmbed = new MessageEmbed()
+			.setColor('GREEN')
+			.setTitle('Link information!')
+			.setDescription(`Link Owner: <@${interaction.user.id}> \n Link Id: \`${checkLink.id}\` \n When Added: ${moment(checkLink.added).from()} \n Link: || ${checkLink.link} ||`)
+			.setTimestamp()
+			interaction.reply({ ephemeral: true, embeds: [newEmbed] })
+		}
     }
 }
 
