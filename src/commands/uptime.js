@@ -23,6 +23,8 @@ module.exports = {
 	],
     run: async (client, interaction, args) => {
 		const link = interaction.options.getString('link')
+		const checkUrl = link.startsWith('https://')
+		if(checkUrl) return interaction.reply('This is not a link!') // Only https:// links
 		const opt = interaction.options.getString('type')
 		const checkLink = Object.values(client.db.fetch('links')).filter(x => x.userId === interaction.user.id).find(x => x.link === link)
 		if(opt === 'add') {
