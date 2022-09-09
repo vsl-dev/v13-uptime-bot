@@ -17,7 +17,6 @@ const db = new JsonDatabase({
 	databasePath: "./src/db/database.json"
 });
 const config = require('./config.json');
-const bcrypt = require('bcrypt');
 var clc = require('cli-color');
 
 const Discord = require("discord.js");
